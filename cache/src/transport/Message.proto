@@ -1,0 +1,92 @@
+package transport;
+
+message Message
+{
+  optional uint32 version = 1 [default = 1];
+  extensions 500 to max;
+}
+
+extend Message
+{
+   // Unit tests
+   optional UnitTestBaseMsg unit_test_base_msg           = 500;
+   optional MulticastMsg multicast_msg                   = 501;
+
+   // Media
+   optional RequestJobMsg media_request_job_msg         = 507;
+   optional AssignJobMsg media_assign_job_msg           = 508;
+   optional JobResultMsg media_job_result_msg           = 509;
+   optional WorkerTerminationMsg media_worker_term_msg  = 510;
+}
+
+// Master <- Worker
+message ScRequestJobMsg
+{
+  optional string worker_hostname = 1;
+  optional uint32 worker_pid = 2;
+  optional uint32 worker_rank = 3;
+}
+
+// Master -> Worker
+message ScAssignJobMsg
+{
+  optional string worker_hostname = 1;
+  optional uint32 worker_rank = 2;
+  optional string dsid = 3;
+  optional uint32 chid = 4;
+}
+
+// Master <- Worker
+message ScJobResultMsg
+{
+  optional string dsid = 1;
+  optional uint32 chid = 2;
+  optional bool failure = 3;
+  optional bool fatal = 4;
+  optional uint64 usecs_total = 5;
+  optional uint64 usecs_loaded = 6;
+  optional uint64 bytes_loaded = 7;
+  optional uint64 usecs_stored = 8;
+  optional uint64 bytes_stored = 9;
+  optional uint64 usecs_worked = 10;
+  optional uint64 bytes_worked = 11;
+}
+
+// Master <- Worker
+message ScWorkerTerminationMsg
+{
+  optional string worker_hostname = 1;
+  optional uint32 worker_pid = 2;
+  optional uint32 worker_rank = 3;
+}
+
+
+// Unit test stuff...
+
+message UnitTestBaseMsg
+{
+  optional int32 id = 1;
+  optional string name = 2;
+
+  extensions 100 to max;
+}
+
+extend UnitTestBaseMsg
+{
+  optional UnitTest1Msg unit_test1_msg = 500;
+}
+
+message UnitTest1Msg
+{
+  optional bool is_test = 1;
+  optional string desc = 2;
+}
+
+message MulticastMsg
+{
+  optional uint32 srcIp = 1;
+  optional uint32 srcPid = 2;
+
+  extensions 100 to max;
+}
+
